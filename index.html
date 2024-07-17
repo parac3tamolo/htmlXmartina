@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it">
+<script src="https://www.youtube.com/iframe_api"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perdonami</title>
+    <style>
+        body {
+			font-family: 'Arial', sans-serif;
+			background: #000;
+			color: #fff;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+			overflow: hidden;
+
+			border: 20px solid pink;
+			border-image-source: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/652/hearts-border-image.png);
+			border-image-slice: 20 22;
+			border-image-repeat: round;
+			}
+			/* styling for Pen, unrelated to border-image */
+
+			* {
+			box-sizing: border-box;
+			}
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+			text-align: center;
+			opacity: 0;
+        }
+		.overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+        }
+        h1 {
+            color: #ff8be9;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+        .text {
+            font-size: 48px;
+            text-align: center;
+            color: #fff; /* Colore del testo bianco */
+			font-family: monospace;
+		}
+        button {
+            background-color: #ff8be9;
+            color: white;
+            border: none;
+			margin: 5px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+			font-family: monospace;
+        }
+        button:hover {
+            background-color: #ff17f6;
+        }
+
+		@keyframes fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes fade-out {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        @keyframes color-background {
+            0% { background-color: rgba(0, 0, 0, 0.8); }
+            100% { background-color: #f6f6f6; }
+        }
+		#startBtn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            z-index: 10; /* Assicurati che sia sopra il resto */
+            font-family: monospace;
+        }
+        #startBtn:hover {
+            background-color: #ff17f6;
+        }
+		#volumeText {
+            position: absolute;
+            top: calc(20% - 100px); /* Posiziona sopra il pulsante "Inizia" */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-family: monospace;
+			white-space: nowrap
+        }
+    </style>
+</head>
+<body>
+
+	<div id="player" style="display:none;"></div>
+
+	<div class="overlay" id="overlay1">
+        <div class="text" style="color: white">Ei...</div>
+    </div>
+
+    <div class="overlay" id="overlay2">
+        <div class="text" style="color: white">Ciao</div>
+    </div>
+	
+	<p id="volumeText">Alza il volume</p>
+	
+	<button id="startBtn">Inizia</button>
+	
+    <div class="container">
+        <h1 style="font-family: monospace;">Oggetto: Scuse per Martina</h1>
+        <p style="font-family: monospace;">Cara Martina,</p>
+        <p style="font-family: monospace;">So di aver sbagliato e mi dispiace tantissimo. Non riesco a smettere di pensare a te. Mi perdoni?</p>
+        <button id="forgiveBtn">Sì, ti perdono</button>
+        <button id="noBtn">No, non ancora</button>
+        <p id="response" style="font-family: monospace;"></p>
+    </div>
+	
+    <script>
+	
+        document.addEventListener('DOMContentLoaded', function() {
+            // No need to do anything here, everything is handled by the start button
+        });
+		
+		
+		let sendButton;
+		let messageToSend;
+
+		document.getElementById('forgiveBtn').addEventListener('click', function() {
+			let message = 'Grazie per avermi perdonato! Ti prometto che non ti deluderò più.';
+			document.getElementById('response').textContent = message;
+			showSendButton(message);
+		});
+
+		document.getElementById('noBtn').addEventListener('click', function() {
+			let message = 'Capisco e rispetterò il tuo tempo. Sarò qui, pronto a rimediare quando sarai pronta a parlare.';
+			document.getElementById('response').textContent = message;
+			showSendButton(message);
+		});
+
+		function showSendButton(message) {
+			messageToSend = message; // Aggiorna il messaggio da inviare
+
+			if (!sendButton) {
+				sendButton = document.createElement('button');
+				sendButton.textContent = 'Invia risposta a Gianluca';
+				sendButton.style.backgroundColor = '#ff8be9';
+				sendButton.style.color = 'white';
+				sendButton.style.border = 'none';
+				sendButton.style.padding = '10px 20px';
+				sendButton.style.borderRadius = '5px';
+				sendButton.style.fontSize = '16px';
+				sendButton.style.cursor = 'pointer';
+				sendButton.style.transition = 'background-color 0.3s ease';
+				sendButton.style.marginTop = '20px';
+
+				sendButton.addEventListener('click', function() {
+					sendEmail(messageToSend);
+				});
+
+				document.querySelector('.container').appendChild(sendButton);
+			}
+		}
+
+		function sendEmail(message) {
+			fetch('https://scusa-d4da8b8d9382.herokuapp.com/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: new URLSearchParams({
+					email: 'lukeferrari97@gmail.com',
+					message: message
+				})
+			})
+			.then(response => response.text())
+			.then(data => {
+				console.log('Success:', data);
+				showConfirmation();
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+		}
+		
+		function showConfirmation() {
+			const confirmationDiv = document.createElement('div');
+			confirmationDiv.textContent = 'Inviata!';
+			confirmationDiv.style.backgroundColor = '#4CAF50';
+			confirmationDiv.style.color = 'white';
+			confirmationDiv.style.padding = '10px';
+			confirmationDiv.style.borderRadius = '5px';
+			confirmationDiv.style.position = 'absolute';
+			confirmationDiv.style.top = '50%';
+			confirmationDiv.style.left = '50%';
+			confirmationDiv.style.transform = 'translate(-50%, -50%)';
+			confirmationDiv.style.zIndex = '1000'; // Assicura che sia sopra gli altri elementi
+			confirmationDiv.style.fontFamily = 'monospace';
+			confirmationDiv.style.fontSize = '20px';
+			document.body.appendChild(confirmationDiv);
+
+			// Nascondi il messaggio dopo 2 secondi
+			setTimeout(function() {
+				confirmationDiv.style.display = 'none';
+			}, 2000);
+		}
+		
+		var player;
+		function onYouTubeIframeAPIReady() {
+			player = new YT.Player('player', {
+				height: '0',
+				width: '0',
+				videoId: 'AvH2WO3RGog',
+				events: {
+					'onReady': onPlayerReady
+				},
+				playerVars: {
+					'autoplay': 1,
+					'loop': 1,
+					'playlist': 'AvH2WO3RGog'
+				}
+			});
+		}
+
+		function onPlayerReady(event) {
+            document.getElementById('startBtn').addEventListener('click', function() {
+				setTimeout(function() {
+					player.unMute(); // Assicurati che l'audio non sia disattivato
+					player.setVolume(50); // Imposta il volume al 50%
+					player.playVideo(); // Inizia la riproduzione del video
+				}, 4000);
+				// Nascondi il testo "Alza il Volume"
+                document.getElementById('volumeText').style.display = 'none';
+				
+                // Nascondi il pulsante "Inizia"
+                document.getElementById('startBtn').style.display = 'none';
+
+                // Avvia le animazioni delle scritte e del riquadro con le scelte
+                const overlay1 = document.getElementById('overlay1');
+                const overlay2 = document.getElementById('overlay2');
+                const container = document.querySelector('.container');
+
+                setTimeout(function() {
+                    overlay1.style.animation = 'fade-in 2s forwards';
+                    setTimeout(function() {
+                        overlay1.style.animation = 'fade-out 2s forwards';
+                    }, 2000); // Attende 2 secondi prima di iniziare il fade-out
+                }, 1000); // Aspetta 1 secondo prima di avviare la prima animazione
+
+                setTimeout(function() {
+                    overlay2.style.animation = 'fade-in 2s forwards';
+                    setTimeout(function() {
+                        overlay2.style.animation = 'fade-out 2s forwards';
+                    }, 2000); // Attende 2 secondi prima di iniziare il fade-out
+                }, 5000); // Aspetta 5 secondi prima di avviare la seconda animazione
+
+                setTimeout(function() {
+                    container.style.animation = 'fade-in 2s forwards';
+                    document.body.style.animation = 'color-background 2s forwards';
+                }, 9000); // Aspetta 9 secondi prima di mostrare il contenuto principale
+            });
+        }
+    </script>
+</body>
+</html>
